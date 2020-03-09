@@ -1,11 +1,15 @@
 import svgwrite
 from xml.dom import minidom
-
 from xml.dom import minidom
 
-doc = minidom.parse("Test1.svg")  # parseString also exists
-path_strings = [path.getAttribute('d') for path
-                in doc.getElementsByTagName('path')]
+doc = minidom.parse("Trial sheet_p3_20200309.svg")  # parseString also exists
+path_strings = [path.getAttribute('d') for path in doc.getElementsByTagName('path')]
+
+class Element:
+    def __init__(self, xcoordinates, ycoordinates, tag):
+        self.xcoordinates = xcoordinates
+        self.ycoordinates = ycoordinates
+        self.tag = tag
 
 #print(path_strings[0])
 #doc.unlink()
@@ -24,6 +28,7 @@ for i in range(len(path_strings)):
 Xcoordinates = []
 Ycoordinates = []
 coordinates = []
+elements = []
 
 for i in range(len(path_stringsL)):
     coordinates.append(path_stringsL[i].split())
@@ -44,7 +49,16 @@ print(coordinates)
 print(Xcoordinates)
 print(Ycoordinates)
 
-# dwg = svgwrite.Drawing('test.svg', profile='tiny')
-# dwg.add(dwg.line((Xcoordinates[0], Ycoordinates[0][1]), (coordinates[0][-2], coordinates[0][-1]), stroke=svgwrite.rgb(10, 10, 16, '%')))
-# dwg.add(dwg.line((coordinates[1][0], coordinates[1][1]), (coordinates[1][-2], coordinates[1][-1]), stroke = svgwrite.rgb(10, 10, 16, '%')))
-# dwg.save()
+for i in range(len(coordinates)):
+    if abs(float(Xcoordinates[i][-1]) - float(Xcoordinates[i][0])) < abs(float(Ycoordinates[i][-1]) - float(Ycoordinates[i][0])):
+        #print("elemento numero:", i, " : linea verticale")
+        elements.append(Element(Xcoordinates[i],Ycoordinates[i], "linea verticale"))
+    else:
+        #print("elemento numero:", i, " : linea orizzontale")
+        elements.append(Element(Xcoordinates[i], Ycoordinates[i], "linea orizzontale"))
+for i in range(len(elements)):
+    print(elements[i].tag)
+dwg = svgwrite.Drawing('test.svg', profile='tiny')
+dwg.add(dwg.line((Xcoordinates[0][0], Ycoordinates[0][0]), (Xcoordinates[0][-1], Ycoordinates[0][-1]), stroke = svgwrite.rgb(10, 10, 16, '%')))
+#dwg.add(dwg.line((Xcoordinates[1][0], Ycoordinates[1][0]), (Xcoordinates[1][-1], Ycoordinates[1][-1]), stroke = svgwrite.rgb(10, 10, 16, '%')))
+dwg.save()
