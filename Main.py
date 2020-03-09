@@ -25,30 +25,26 @@ Xcoordinates = []
 Ycoordinates = []
 coordinates = []
 
-#for i in range(Xcoordinates):
-
 for i in range(len(path_stringsL)):
     coordinates.append(path_stringsL[i].split())
+
+for i in range(len(coordinates)):
+    support = []
+    for j in range(0,len(coordinates[i]),2):
+        support.append(coordinates[i][j])
+    Xcoordinates.append(support)
+
+for i in range(len(coordinates)):
+    support = []
+    for j in range(1,len(coordinates[i]),2):
+        support.append(coordinates[i][j])
+    Ycoordinates.append(support)
+
 print(coordinates)
-
-for j in range(len(coordinates)):
-    for i in range(0,len(coordinates[j]),2):
-        Xcoordinates[j].append(coordinates[j][i])
 print(Xcoordinates)
-
-for j in range(len(coordinates)):
-    for i in range(1,len(coordinates[j]),2):
-        Ycoordinates[j].append(coordinates[j][i])
 print(Ycoordinates)
-
-# for j in range(len(coordinates)):
-#     for i in range(len(coordinates[j])):
-#          a = float(coordinates[j][i])
-#          print(a)
 
 # dwg = svgwrite.Drawing('test.svg', profile='tiny')
 # dwg.add(dwg.line((Xcoordinates[0], Ycoordinates[0][1]), (coordinates[0][-2], coordinates[0][-1]), stroke=svgwrite.rgb(10, 10, 16, '%')))
 # dwg.add(dwg.line((coordinates[1][0], coordinates[1][1]), (coordinates[1][-2], coordinates[1][-1]), stroke = svgwrite.rgb(10, 10, 16, '%')))
 # dwg.save()
-
-
