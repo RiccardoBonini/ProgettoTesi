@@ -1,9 +1,5 @@
 import svgwrite
 from xml.dom import minidom
-from xml.dom import minidom
-
-doc = minidom.parse("N Toaster D_p20_20200310.svg")  # parseString also exists
-path_strings = [path.getAttribute('d') for path in doc.getElementsByTagName('path')]
 
 class Element:
     def __init__(self, xcoordinates, ycoordinates, tag):
@@ -11,16 +7,31 @@ class Element:
         self.ycoordinates = ycoordinates
         self.tag = tag
         self.x1 = self.x2 = self.y1 = self.y2 = 0
-
-    def adjust(self):
+        # if self.tag == "linea verticale":
+        #     self.x1 = x1
+        #     self.x2 = (min(self.xcoordinates) + max(self.xcoordinates)) / 2
+        #     self.y1 = y1
+        #     self.y2 = max(self.ycoordinates)
+        # else:
+        #     self.y1 = y1
+        #     self.y2 = (min(self.ycoordinates) + max(self.ycoordinates)) / 2
+        #     self.x1 = x1
+        #     self.x2 = max(self.xcoordinates)
+        #
+    def adjust(self, x1, y1):
         if self.tag == "linea verticale":
-            self.x1 = self.x2 = (min(self.xcoordinates) + max(self.xcoordinates)) / 2
-            self.y1 = min(self.ycoordinates)
-            self.y2 = max(self.ycoordinates)
-        else:
-            self.y1 = self.y2 = (min(self.ycoordinates) + max(self.ycoordinates)) / 2
-            self.x1 = min(self.xcoordinates)
-            self.x2 = max(self.xcoordinates)
+            self.x1 = x1
+            self.x2 = x1
+            self.y1 = y1
+            self.y2 = self.ycoordinates[-1]#max(self.ycoordinates)
+        if self.tag == "linea orizzontale":
+            self.y1 = y1
+            self.y2 = y1
+            self.x1 = x1
+            self.x2 = self.xcoordinates[-1]#max(self.xcoordinates)
+
+doc = minidom.parse("N Toaster D_p18_20200310.svg")  # parseString also exists
+path_strings = [path.getAttribute('d') for path in doc.getElementsByTagName('path')]
 
 #print(path_strings[0])
 #doc.unlink()
@@ -60,9 +71,10 @@ for i in range(len(coordinates)):
         support.append(coordinates[i][j])
     Ycoordinates.append(support)
 
-print(coordinates)
-print(Xcoordinates)
-print(Ycoordinates)
+# print(coordinates)
+# print(Xcoordinates)
+# print(Ycoordinates)
+
 
 for i in range(len(coordinates)):
     if abs(Xcoordinates[i][-1] - Xcoordinates[i][0]) < abs(Ycoordinates[i][-1] - Ycoordinates[i][0]):
@@ -71,13 +83,31 @@ for i in range(len(coordinates)):
     else:
         #print("elemento numero:", i, " : linea orizzontale")
         elements.append(Element(Xcoordinates[i], Ycoordinates[i], "linea orizzontale"))
+
+
+
 for i in range(len(elements)):
-    print(elements[i].tag)
-    elements[i].adjust()
-    print(elements[i].x1,elements[i].x2, elements[i].y1, elements[i].y2)
+    #print(elements[i].tag)
+    if i == 0: elements[i].adjust(Xcoordinates[-1][-1], Ycoordinates[-1][-1])
+    else: elements[i].adjust(elements[i - 1].x2, elements[i - 1].y2)
+
+print(Xcoordinates[3])
+print(Ycoordinates[3])
+# print(min(Xcoordinates[3]), min(Ycoordinates[3]), max(Xcoordinates[3]), max(Ycoordinates[3]))
+# print(elements[3].x1, elements[3].y1, elements[3].x2, elements[3].y2)
 
 dwg = svgwrite.Drawing('test.svg', profile='tiny')
 for i in range(len(elements)):
     dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[0].x1, elements[0].y1), (elements[0].x2, elements[0].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[1].x1, elements[1].y1), (elements[1].x2, elements[1].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[2].x1, elements[2].y1), (elements[2].x2, elements[2].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[3].x1, elements[3].y1), (elements[3].x2, elements[3].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[4].x1, elements[4].y1), (elements[4].x2, elements[4].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[5].x1, elements[5].y1), (elements[5].x2, elements[5].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[6].x1, elements[6].y1), (elements[6].x2, elements[6].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[7].x1, elements[7].y1), (elements[7].x2, elements[7].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[8].x1, elements[8].y1), (elements[8].x2, elements[8].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+
 #dwg.add(dwg.line((Xcoordinates[1][0], Ycoordinates[1][0]), (Xcoordinates[1][-1], Ycoordinates[1][-1]), stroke = svgwrite.rgb(10, 10, 16, '%')))
 dwg.save()
