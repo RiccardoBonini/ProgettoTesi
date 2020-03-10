@@ -30,7 +30,7 @@ class Element:
             self.x1 = x1
             self.x2 = self.xcoordinates[-1]#max(self.xcoordinates)
 
-doc = minidom.parse("N Toaster D_p18_20200310.svg")  # parseString also exists
+doc = minidom.parse("N Toaster D_p19_20200310.svg")  # parseString also exists
 path_strings = [path.getAttribute('d') for path in doc.getElementsByTagName('path')]
 
 #print(path_strings[0])
@@ -76,6 +76,7 @@ for i in range(len(coordinates)):
 # print(Ycoordinates)
 
 
+
 for i in range(len(coordinates)):
     if abs(Xcoordinates[i][-1] - Xcoordinates[i][0]) < abs(Ycoordinates[i][-1] - Ycoordinates[i][0]):
         #print("elemento numero:", i, " : linea verticale")
@@ -91,14 +92,16 @@ for i in range(len(elements)):
     if i == 0: elements[i].adjust(Xcoordinates[-1][-1], Ycoordinates[-1][-1])
     else: elements[i].adjust(elements[i - 1].x2, elements[i - 1].y2)
 
-print(Xcoordinates[3])
-print(Ycoordinates[3])
 # print(min(Xcoordinates[3]), min(Ycoordinates[3]), max(Xcoordinates[3]), max(Ycoordinates[3]))
 # print(elements[3].x1, elements[3].y1, elements[3].x2, elements[3].y2)
+
 
 dwg = svgwrite.Drawing('test.svg', profile='tiny')
 for i in range(len(elements)):
     dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# for i in range(len(Xcoordinates)):
+#     dwg.add(dwg.line((Xcoordinates[i][0], Ycoordinates[i][0]), (Xcoordinates[i][-1],Ycoordinates[i][-1]),stroke=svgwrite.rgb(10, 10, 16, '%')))
+
 # dwg.add(dwg.line((elements[0].x1, elements[0].y1), (elements[0].x2, elements[0].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
 # dwg.add(dwg.line((elements[1].x1, elements[1].y1), (elements[1].x2, elements[1].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
 # dwg.add(dwg.line((elements[2].x1, elements[2].y1), (elements[2].x2, elements[2].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
@@ -107,7 +110,17 @@ for i in range(len(elements)):
 # dwg.add(dwg.line((elements[5].x1, elements[5].y1), (elements[5].x2, elements[5].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
 # dwg.add(dwg.line((elements[6].x1, elements[6].y1), (elements[6].x2, elements[6].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
 # dwg.add(dwg.line((elements[7].x1, elements[7].y1), (elements[7].x2, elements[7].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
-# dwg.add(dwg.line((elements[8].x1, elements[8].y1), (elements[8].x2, elements[8].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+#dwg.add(dwg.line((elements[8].x1, elements[8].y1), (elements[8].x2, elements[8].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[9].x1, elements[9].y1), (elements[9].x2, elements[9].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[10].x1, elements[10].y1), (elements[10].x2, elements[10].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[11].x1, elements[11].y1), (elements[11].x2, elements[11].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+#dwg.add(dwg.line((elements[12].x1, elements[12].y1), (elements[12].x2, elements[12].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+#dwg.add(dwg.line((elements[13].x1, elements[13].y1), (elements[13].x2, elements[13].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[5].x1, elements[5].y1), (elements[5].x2, elements[5].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[6].x1, elements[6].y1), (elements[6].x2, elements[6].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+# dwg.add(dwg.line((elements[7].x1, elements[7].y1), (elements[7].x2, elements[7].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+#dwg.add(dwg.line((elements[-4].x1, elements[-4].y1), (elements[-4].x2, elements[-4].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+
 
 #dwg.add(dwg.line((Xcoordinates[1][0], Ycoordinates[1][0]), (Xcoordinates[1][-1], Ycoordinates[1][-1]), stroke = svgwrite.rgb(10, 10, 16, '%')))
 dwg.save()
