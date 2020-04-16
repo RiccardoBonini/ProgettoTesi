@@ -36,8 +36,11 @@ class Element:
         if abs(self.y1 - yupperbound) < 20: self.y1 = yupperbound
         if abs(self.y1 - ylowerbound) < 20: self.y1 = ylowerbound
         if abs(self.y2 - yupperbound) < 20: self.y2 = yupperbound
-        if abs(self.y2 - ylowerbound) < 20 : self.y2 = ylowerbound
-doc = minidom.parse("N Toaster D_p16_20200311.svg")  # parseString also exists
+        if abs(self.y2 - ylowerbound) < 20: self.y2 = ylowerbound
+doc = minidom.parse("Esempio3_prima.svg")  # parseString also exists
+svg_width = doc.getElementsByTagName('svg')[0].getAttribute('width')
+svg_height = doc.getElementsByTagName('svg')[0].getAttribute('height')
+print(svg_width, svg_height)
 path_strings = [path.getAttribute('d') for path in doc.getElementsByTagName('path')]
 
 #print(path_strings[0])
@@ -122,7 +125,8 @@ for i in range(len(elements)):
 # print(elements[3].x1, elements[3].y1, elements[3].x2, elements[3].y2)
 
 
-dwg = svgwrite.Drawing('test.svg', profile='tiny')
+dwg = svgwrite.Drawing('Esempio3_dopo.svg', profile='full')
+dwg.viewbox(width= svg_width, height= svg_height)
 for i in range(len(elements)):
     dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
 # for i in range(len(Xcoordinates)):
