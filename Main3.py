@@ -1,10 +1,5 @@
 import svgwrite
 from xml.dom import minidom
-import math
-
-def distanceBetweenPoints(x1, y1, x2, y2):
-    distance = math.sqrt(((x1 - x2)**2) + ((y1 - y2)**2))
-    return distance
 
 class Element:
     def __init__(self, xcoordinates, ycoordinates, tag):
@@ -23,28 +18,87 @@ class Element:
         #     self.x1 = x1
         #     self.x2 = max(self.xcoordinates)
         #
-    def adjust(self, xupperbound, xlowerbound, yupperbound, ylowerbound):
+    def adjustFirstElement(self):
         if self.tag == "linea verticale":
-            self.x1 = (min(self.xcoordinates) + max(self.xcoordinates)) / 2
-            self.x2 = (min(self.xcoordinates) + max(self.xcoordinates)) / 2
-            self.y1 = self.ycoordinates[0]
-            self.y2 = self.ycoordinates[-1]#max(self.ycoordinates)
+            self.x1 = min(self.xcoordinates)
+            self.x2 = min(self.xcoordinates)
+            self.y1 = min(self.ycoordinates)
+            self.y2 = max(self.ycoordinates)
+
+        if self.tag == 'linea orizzontale':
+            self.y1 = min(self.ycoordinates)
+            self.y2 = min(self.ycoordinates)
+            self.x1 = min(self.xcoordinates)
+            self.x2 = max(self.xcoordinates)
+
+    def adjust(self, prex, prey, pretag):
+        if self.tag == "linea verticale":
+            if pretag == 'linea orizzontale':
+                self.x1 = prex
+                self.x2 = prex
+                self.y1 = prey
+                if abs(min(self.ycoordinates) - prey) <= 10:
+                    self.y2 = max(self.ycoordinates)
+                else:
+                    self.y2 = min(self.ycoordinates)
+            if pretag == 'linea verticale':
+                self.y1 = prey
+                self.y2 = prey
+                self.x1 = prex
+                if abs(min(self.xcoordinates) - prex) <= 10:
+                    self.x2 = max(self.xcoordinates)
+                else:
+                    self.x2 = min(self.xcoordinates)
         if self.tag == "linea orizzontale":
-            self.y1 = (min(self.ycoordinates) + max(self.ycoordinates)) / 2
-            self.y2 = (min(self.ycoordinates) + max(self.ycoordinates)) / 2
-            self.x1 = self.xcoordinates[0]
-            self.x2 = self.xcoordinates[-1]#max(self.xcoordinates)
-        if abs(self.x1 - xupperbound) < 20: self.x1 = xupperbound
-        if abs(self.x1 - xlowerbound) < 20: self.x1 = xlowerbound
-        if abs(self.x2 - xupperbound) < 20: self.x2 = xupperbound
-        if abs(self.x2 - xlowerbound) < 20: self.x2 = xlowerbound
-        if abs(self.y1 - yupperbound) < 20: self.y1 = yupperbound
-        if abs(self.y1 - ylowerbound) < 20: self.y1 = ylowerbound
-        if abs(self.y2 - yupperbound) < 20: self.y2 = yupperbound
-        if abs(self.y2 - ylowerbound) < 20: self.y2 = ylowerbound
+            if pretag == 'linea verticale':
+                self.y1 = prey
+                self.y2 = prey
+                self.x1 = prex
+                if abs(min(self.xcoordinates) - prex) <= 10:
+                    self.x2 = max(self.xcoordinates)
+                else:
+                    self.x2 = min(self.xcoordinates)
+            if pretag == 'linea orizzontale':
+                self.x1 = prex
+                self.x2 = prex
+                self.y1 = prey
+                if abs(min(self.ycoordinates) - prey) <= 10:
+                    self.y2 = max(self.ycoordinates)
+                else:
+                    self.y2 = min(self.ycoordinates)
+        # if abs(self.x1 - xupperbound) < 20: self.x1 = xupperbound
+        # if abs(self.x1 - xlowerbound) < 20: self.x1 = xlowerbound
+        # if abs(self.x2 - xupperbound) < 20: self.x2 = xupperbound
+        # if abs(self.x2 - xlowerbound) < 20: self.x2 = xlowerbound
+        # if abs(self.y1 - yupperbound) < 20: self.y1 = yupperbound
+        # if abs(self.y1 - ylowerbound) < 20: self.y1 = ylowerbound
+        # if abs(self.y2 - yupperbound) < 20: self.y2 = yupperbound
+        # if abs(self.y2 - ylowerbound) < 20: self.y2 = ylowerbound
 
-
-doc = minidom.parse("Esempio3_prima.svg")  # parseString also exists
+    def adjustLastElement(self, firstelement, prex, prey, pretag):
+        if self.tag == "linea verticale":
+            if firstelement.tag == 'linea orizzontale':
+                self.x1 = firstelement.x1
+                self.x2 = firstelement.x1
+                self.y1 = prey
+                self.y2 = firstelement.y1
+            if firstelement.tag == 'linea verticale':
+                self.y1 = prey
+                self.y2 = firstelement.y1
+                self.x1 = firstelement.x1
+                self.x2 = firstelement.x1
+        if self.tag == "linea orizzontale":
+            if firstelement.tag == 'linea verticale':
+                self.y1 = firstelement.y1
+                self.y2 = firstelement.y1
+                self.x1 = prex
+                self.x2 = firstelement.x1
+            if firstelement.tag == 'linea orizzontale':
+                self.x1 = prex
+                self.x2 = firstelement.x1
+                self.y1 = firstelement.y1
+                self.y2 = firstelement.y1
+doc = minidom.parse("Esempio2_prima.svg")  # parseString also exists
 svg_width = doc.getElementsByTagName('svg')[0].getAttribute('width')
 svg_height = doc.getElementsByTagName('svg')[0].getAttribute('height')
 print(svg_width, svg_height)
@@ -126,40 +180,18 @@ for i in range(len(coordinates)):
 
 for i in range(len(elements)):
     #print(elements[i].tag)
-    elements[i].adjust(Xupperbound, Xlowerbound, Yupperbound, Ylowerbound)
+    if i == 0:
+        elements[i].adjustFirstElement()
+    if i == len(elements) - 1:
+        elements[i].adjustLastElement(elements[0], elements[i - 1].x2, elements[i - 1]. y2, elements[i - 1].tag )
+    else :
+        elements[i].adjust(elements[i - 1].x2, elements[i - 1]. y2, elements[i - 1].tag)
 
 # print(min(Xcoordinates[3]), min(Ycoordinates[3]), max(Xcoordinates[3]), max(Ycoordinates[3]))
 # print(elements[3].x1, elements[3].y1, elements[3].x2, elements[3].y2)
 
-fixed = 100
-while fixed > 0:
-    for i in range(len(elements)):
-        if distanceBetweenPoints(elements[i].x1, elements[i].y1, elements[i - 1].x2, elements[i -1].y2) >= 0.5:
-            #print("L'elemento ", i , "ha uno spazio vuoto a sinistra")
-            if elements[i].tag == 'linea orizzontale':
-                if elements[i].x1 < elements[i - 1].x2: elements[i].x1 += 0.1
-                else: elements[i].x1 -= 0.1
-                if elements[i].y1 < elements[i - 1].y2:
-                    elements[i].y1 += 0.1
-                    elements[i].y2 += 0.1
-                else:
-                    elements[i].y1 -= 0.1
-                    elements[i].y2 -= 0.1
-            if elements[i].tag == 'linea verticale':
-                if elements[i].x1 < elements[i - 1].x2:
-                    elements[i].x1 += 0.1
-                    elements[i].x2 += 0.1
-                else:
-                    elements[i].x1 -= 0.1
-                    elements[i].x2 -= 0.1
-                if elements[i].y1 < elements[i - 1].y2:
-                    elements[i].y1 += 0.1
-                else:
-                    elements[i].y1 -= 0.1
 
-    fixed -= 1
-
-dwg = svgwrite.Drawing('Esempio3_dopo.svg', profile='full')
+dwg = svgwrite.Drawing('Esempio2_dopo.svg', profile='full')
 dwg.viewbox(width= svg_width, height= svg_height)
 for i in range(len(elements)):
     dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
