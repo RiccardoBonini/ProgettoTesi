@@ -16,6 +16,7 @@ class Element:
         self.neighbour2 = None
         self.flag1 = None
         self.flag2 = None
+        self.stroke_width = 2
         # if self.tag == "linea verticale":
         #     self.x1 = x1
         #     self.x2 = (min(self.xcoordinates) + max(self.xcoordinates)) / 2
@@ -183,6 +184,7 @@ for i in range(len(horizontalElements)):
 #                         verticalElements[i].flag2 = False
 #                     else: verticalElements[i].flag2 = True
 
+#cicli per individuare gli spazi vuoti ed assegnare gli eventuali elementi adiacenti
 for i in range(len(verticalElements)):
     distance = 1000
     for j in range(len(horizontalElements)):
@@ -295,7 +297,7 @@ for i in range(len(horizontalElements)):
         else:
             horizontalElements[i].flag2 = False
 
-
+#cicli per sistemare gli spazi vuoti
 for i in range(len(verticalElements)):
     verticalElements[i].fix()
     elements.append(verticalElements[i])
@@ -304,10 +306,33 @@ for i in range(len(horizontalElements)):
     horizontalElements[i].fix()
     elements.append(horizontalElements[i])
 
+#ciclo per individuare il bordo esterno
+topElement = horizontalElements[0]
+for i in range(len(horizontalElements)):
+    if horizontalElements[i].y1 < topElement.y1:
+        topElement = horizontalElements[i]
+
+print(topElement.y1)
+loop = True
+current = topElement
+next = topElement.neighbour2
+visited = []
+
+while loop == True:
+    current.stroke_width = 10
+    visited.append(current)
+    if current.neighbour2 not in visited:
+        next = current.neighbour2
+    else: next = current.neighbour1
+    current = next
+    if current == topElement:
+        loop = False
+
+
 dwg = svgwrite.Drawing('Esempio12_dopo.svg', profile='full')
 
 dwg.viewbox(width= svg_width, height= svg_height)
 for i in range(len(elements)):
-    dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(10, 10, 16, '%')))
+    dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(10, 10, 16, '%'), stroke_width = elements[i].stroke_width))
 
 dwg.save()
