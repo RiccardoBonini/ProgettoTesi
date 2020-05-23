@@ -17,6 +17,10 @@ class Element:
         self.flag1 = None
         self.flag2 = None
         self.stroke_width = 2
+        self.role = None
+        self.red = 0
+        self.green = 0
+        self.blue = 0
         # if self.tag == "linea verticale":
         #     self.x1 = x1
         #     self.x2 = (min(self.xcoordinates) + max(self.xcoordinates)) / 2
@@ -29,16 +33,21 @@ class Element:
         #     self.x2 = max(self.xcoordinates)
         #
     def adjust(self, xupperbound, xlowerbound, yupperbound, ylowerbound):
-        if self.tag == "linea verticale":
+        if self.tag == 'linea verticale':
             self.x1 = (min(self.xcoordinates) + max(self.xcoordinates)) / 2
             self.x2 = (min(self.xcoordinates) + max(self.xcoordinates)) / 2
             self.y1 = self.ycoordinates[0]
             self.y2 = self.ycoordinates[-1]#max(self.ycoordinates)
-        if self.tag == "linea orizzontale":
+        if self.tag == 'linea orizzontale':
             self.y1 = (min(self.ycoordinates) + max(self.ycoordinates)) / 2
             self.y2 = (min(self.ycoordinates) + max(self.ycoordinates)) / 2
             self.x1 = self.xcoordinates[0]
             self.x2 = self.xcoordinates[-1]#max(self.xcoordinates)
+        if self.tag == 'linea diagonale':
+            self.y1 = self.ycoordinates[0]
+            self.y2 = self.ycoordinates[-1]
+            self.x1 = self.xcoordinates[0]
+            self.x2 = self.xcoordinates[-1]
         if abs(self.x1 - xupperbound) < 50: self.x1 = xupperbound
         if abs(self.x1 - xlowerbound) < 50: self.x1 = xlowerbound
         if abs(self.x2 - xupperbound) < 50: self.x2 = xupperbound
@@ -63,11 +72,31 @@ class Element:
         if self.tag == 'linea orizzontale':
             if self.flag1 == True: self.x1 = self.neighbour1.x1
             if self.flag2 == True: self.x2 = self.neighbour2.x1
+        if self.tag == 'linea diagonale':
+            if self.flag1 == True:
+                distance1 = distanceBetweenPoints(self.x1, self.y1, self.neighbour1.x1, self.neighbour1.y1)
+                distance2 = distanceBetweenPoints(self.x1, self.y1, self.neighbour1.x2, self.neighbour1.y2)
+                if distance1 < distance2:
+                    self.x1 = self.neighbour1.x1
+                    self.y1 = self.neighbour1.y1
+                else:
+                    self.x1 = self.neighbour1.x2
+                    self.y1 = self.neighbour1.y2
+            if self.flag2 == True:
+                distance1 = distanceBetweenPoints(self.x2, self.y2, self.neighbour1.x1, self.neighbour1.y1)
+                distance2 = distanceBetweenPoints(self.x2, self.y2, self.neighbour1.x2, self.neighbour1.y2)
+                if distance1 < distance2:
+                    self.x2 = self.neighbour1.x1
+                    self.y2 = self.neighbour1.y1
+                else:
+                    self.x2 = self.neighbour1.x2
+                    self.y2 = self.neighbour1.y2
 
-doc = minidom.parse("Esempio12_prima.svg")
+
+doc = minidom.parse('Esempio15_prima.svg')
 svg_width = doc.getElementsByTagName('svg')[0].getAttribute('width')
 svg_height = doc.getElementsByTagName('svg')[0].getAttribute('height')
-print(svg_width, svg_height)
+# print(svg_width, svg_height)
 path_strings = [path.getAttribute('d') for path in doc.getElementsByTagName('path')]
 
 #print(path_strings[0])
@@ -89,6 +118,7 @@ Ycoordinates = []
 coordinates = []
 verticalElements = []
 horizontalElements = []
+diagonalElements = []
 elements = []
 
 for i in range(len(path_stringsL)):
@@ -135,16 +165,21 @@ for i in range (len(Ycoordinates)):
     minimum = min(Ycoordinates[i])
     if Ylowerbound > minimum: Ylowerbound = minimum
 
-print(Xlowerbound, Xupperbound, Ylowerbound, Yupperbound)
+# print(Xlowerbound, Xupperbound, Ylowerbound, Yupperbound)
 for i in range(len(coordinates)):
-    if abs(Xcoordinates[i][-1] - Xcoordinates[i][0]) < abs(Ycoordinates[i][-1] - Ycoordinates[i][0]):
+    x_difference = abs(Xcoordinates[i][-1] - Xcoordinates[i][0])
+    y_difference = abs(Ycoordinates[i][-1] - Ycoordinates[i][0])
+    if abs(x_difference - y_difference) < 50:
+        diagonalElements.append(Element(Xcoordinates[i],Ycoordinates[i], 'linea diagonale'))
+    else :
+        if abs(Xcoordinates[i][-1] - Xcoordinates[i][0]) < abs(Ycoordinates[i][-1] - Ycoordinates[i][0]):
         #print("elemento numero:", i, " : linea verticale")
-        verticalElements.append(Element(Xcoordinates[i],Ycoordinates[i], "linea verticale"))
-    else:
+            verticalElements.append(Element(Xcoordinates[i],Ycoordinates[i], 'linea verticale'))
+        else:
         #print("elemento numero:", i, " : linea orizzontale")
-        horizontalElements.append(Element(Xcoordinates[i], Ycoordinates[i], "linea orizzontale"))
+            horizontalElements.append(Element(Xcoordinates[i], Ycoordinates[i], 'linea orizzontale'))
 
-
+print('Ci sono', len(diagonalElements), 'elementi diagonali')
 
 for i in range(len(verticalElements)):
     #print(elements[i].tag)
@@ -153,6 +188,9 @@ for i in range(len(verticalElements)):
 for i in range(len(horizontalElements)):
     #print(elements[i].tag)
     horizontalElements[i].adjust(Xupperbound, Xlowerbound, Yupperbound, Ylowerbound)
+
+for i in range(len(diagonalElements)):
+    diagonalElements[i].adjust(Xupperbound, Xlowerbound, Yupperbound, Ylowerbound)
 
 # for i in range(len(horizontalElements)):
 #     for j in range(len(horizontalElements)):
@@ -188,9 +226,9 @@ for i in range(len(horizontalElements)):
 for i in range(len(verticalElements)):
     distance = 1000
     for j in range(len(horizontalElements)):
-        if abs(verticalElements[i].y1 - horizontalElements[j].y1) < distance:
-            distance = abs(verticalElements[i].y1 - horizontalElements[j].y1)
-            verticalElements[i].neighbour1 = horizontalElements[j]
+            if abs(verticalElements[i].y1 - horizontalElements[j].y1) < distance:
+                distance = abs(verticalElements[i].y1 - horizontalElements[j].y1)
+                verticalElements[i].neighbour1 = horizontalElements[j]
     if distance < 50: verticalElements[i].flag1 = True
     else :
         verticalElements[i].flag1 = False
@@ -198,7 +236,7 @@ for i in range(len(verticalElements)):
     distance = 1000
     for j in range(len(verticalElements)):
         if i != j:
-            if abs(verticalElements[i].x1 - verticalElements[j].x1) <= 50:
+            if abs(verticalElements[i].x1 - verticalElements[j].x1) <= 30:
                 # verticalElements[i].x1 = verticalElements[j].x1
                 # verticalElements[i].x2 = verticalElements[j].x1
                 if verticalElements[i].y1 > verticalElements[j].y2:
@@ -224,7 +262,7 @@ for i in range(len(verticalElements)):
     distance = 1000
     for j in range(len(verticalElements)):
         if i != j:
-            if abs(verticalElements[i].x1 - verticalElements[j].x1) <= 50:
+            if abs(verticalElements[i].x1 - verticalElements[j].x1) <= 30:
                 # verticalElements[i].x1 = verticalElements[j].x1
                 # verticalElements[i].x2 = verticalElements[j].x1
                 if verticalElements[i].y2 < verticalElements[j].y1:
@@ -255,7 +293,7 @@ for i in range(len(horizontalElements)):
     distance = 1000
     for j in range(len(horizontalElements)):
         if i != j:
-            if abs(horizontalElements[i].y1 - horizontalElements[j].y1) <= 50:
+            if abs(horizontalElements[i].y1 - horizontalElements[j].y1) <= 30:
                 # horizontalElements[i].y1 = horizontalElements[j].y1
                 # horizontalElements[i].y2 = horizontalElements[j].y1
                 if horizontalElements[i].x1 > horizontalElements[j].x2:
@@ -281,7 +319,7 @@ for i in range(len(horizontalElements)):
     vertical_distance = distance
     for j in range(len(horizontalElements)):
         if i != j:
-            if abs(horizontalElements[i].y1 - horizontalElements[j].y1) <= 50:
+            if abs(horizontalElements[i].y1 - horizontalElements[j].y1) <= 30:
                 # horizontalElements[i].y1 = horizontalElements[j].y1
                 # horizontalElements[i].y2 = horizontalElements[j].y1
                 if horizontalElements[i].x2 < horizontalElements[j].x1:
@@ -297,6 +335,52 @@ for i in range(len(horizontalElements)):
         else:
             horizontalElements[i].flag2 = False
 
+for i in range(len(diagonalElements)):
+    distance = 1000
+    for j in range(len(horizontalElements)):
+        if distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, horizontalElements[j].x1, horizontalElements[j].y1) < distance:
+            distance = distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, horizontalElements[j].x1, horizontalElements[j].y1)
+            diagonalElements[i].neighbour1 = horizontalElements[j]
+        if distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, horizontalElements[j].x2, horizontalElements[j].y1) < distance:
+            distance = distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, horizontalElements[j].x2, horizontalElements[j].y1)
+            diagonalElements[i].neighbour1 = horizontalElements[j]
+    #horizontal_distance = distance
+    for j in range(len(verticalElements)):
+        if distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y1) < distance:
+            distance = distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y1)
+            diagonalElements[i].neighbour1 = verticalElements[j]
+        if distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y2) < distance:
+            distance = distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y2)
+            diagonalElements[i].neighbour1 = verticalElements[j]
+    if distance < 50:
+        diagonalElements[i].flag1 = True
+    else: diagonalElements[i].flag1 = False
+    distance1 = distance
+    distance = 1000
+    for j in range(len(horizontalElements)):
+        if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x1, horizontalElements[j].y1) < distance:
+            distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x1, horizontalElements[j].y1)
+            diagonalElements[i].neighbour2 = horizontalElements[j]
+        if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x2, horizontalElements[j].y1) < distance:
+            distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x2, horizontalElements[j].y1)
+            diagonalElements[i].neighbour2 = horizontalElements[j]
+    #horizontal_distance = distance
+    for j in range(len(verticalElements)):
+        if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y1) < distance:
+            distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y1)
+            diagonalElements[i].neighbour2 = verticalElements[j]
+        if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2) < distance:
+            distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2)
+            diagonalElements[i].neighbour2 = verticalElements[j]
+    if distance < 50:
+        diagonalElements[i].flag2 = True
+    else: diagonalElements[i].flag2 = False
+    distance2 = distance
+    if distance1 < distance2:
+        diagonalElements[i].flag2 = False
+    else: diagonalElements[i].flag1 = False
+
+
 #cicli per sistemare gli spazi vuoti
 for i in range(len(verticalElements)):
     verticalElements[i].fix()
@@ -306,13 +390,18 @@ for i in range(len(horizontalElements)):
     horizontalElements[i].fix()
     elements.append(horizontalElements[i])
 
+for i in range(len(diagonalElements)):
+    diagonalElements[i].fix()
+    elements.append(diagonalElements[i])
+
+
 #ciclo per individuare il bordo esterno
 topElement = horizontalElements[0]
 for i in range(len(horizontalElements)):
     if horizontalElements[i].y1 < topElement.y1:
         topElement = horizontalElements[i]
 
-print(topElement.y1)
+# print(topElement.y1)
 loop = True
 current = topElement
 next = topElement.neighbour2
@@ -320,6 +409,7 @@ visited = []
 
 while loop == True:
     current.stroke_width = 10
+    current.role = 'bordo'
     visited.append(current)
     if current.neighbour2 not in visited:
         next = current.neighbour2
@@ -328,11 +418,18 @@ while loop == True:
     if current == topElement:
         loop = False
 
+for i in range(len(elements)):
+    if elements[i].role != 'bordo':
+        elements[i].role = 'interno'
+        elements[i].red = 255
+        elements[i].green = 0
+        elements[i].blue = 0
 
-dwg = svgwrite.Drawing('Esempio12_dopo.svg', profile='full')
+dwg = svgwrite.Drawing('Esempio15_dopo.svg', profile='full')
 
 dwg.viewbox(width= svg_width, height= svg_height)
+
 for i in range(len(elements)):
-    dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(10, 10, 16, '%'), stroke_width = elements[i].stroke_width))
+    dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(elements[i].red, elements[i].green, elements[i].blue, '%'), stroke_width = elements[i].stroke_width))
 
 dwg.save()
