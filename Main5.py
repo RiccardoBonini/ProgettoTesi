@@ -420,10 +420,17 @@ while loop == True:
 
 for i in range(len(elements)):
     if elements[i].role != 'bordo':
-        elements[i].role = 'interno'
-        elements[i].red = 255
-        elements[i].green = 0
-        elements[i].blue = 0
+        if elements[i].tag == 'linea diagonale':
+            elements[i].role = 'porta'
+            elements[i].stroke_width = 8
+            elements[i].red = 50
+            elements[i].green = 250
+            elements[i].blue = 50
+        else:
+            elements[i].role = 'interno'
+            elements[i].red = 255
+            elements[i].green = 0
+            elements[i].blue = 0
 
 dwg = svgwrite.Drawing('Esempio15_dopo.svg', profile='full')
 
