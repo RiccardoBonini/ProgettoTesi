@@ -56,14 +56,15 @@ class Element:
         if abs(self.y1 - ylowerbound) < 50: self.y1 = ylowerbound
         if abs(self.y2 - yupperbound) < 50: self.y2 = yupperbound
         if abs(self.y2 - ylowerbound) < 50: self.y2 = ylowerbound
-        if self.y2 < self.y1:
-            tmp = self.y1
-            self.y1 = self.y2
-            self.y2 = tmp
-        if self.x2 < self.x1:
-            tmp = self.x1
-            self.x1 = self.x2
-            self.x2 = tmp
+        if self.tag != 'linea diagonale':
+            if self.y2 < self.y1:
+                tmp = self.y1
+                self.y1 = self.y2
+                self.y2 = tmp
+            if self.x2 < self.x1:
+                tmp = self.x1
+                self.x1 = self.x2
+                self.x2 = tmp
 
     def fix(self):
         if self.tag == 'linea verticale':
@@ -93,7 +94,7 @@ class Element:
                     self.y2 = self.neighbour1.y2
 
 
-doc = minidom.parse('Esempio15_prima.svg')
+doc = minidom.parse('Esempio16_prima.svg')
 svg_width = doc.getElementsByTagName('svg')[0].getAttribute('width')
 svg_height = doc.getElementsByTagName('svg')[0].getAttribute('height')
 # print(svg_width, svg_height)
@@ -190,7 +191,11 @@ for i in range(len(horizontalElements)):
     horizontalElements[i].adjust(Xupperbound, Xlowerbound, Yupperbound, Ylowerbound)
 
 for i in range(len(diagonalElements)):
+    print("elemento diagonale:", i)
+    print(diagonalElements[i].xcoordinates)
+    print(diagonalElements[i].ycoordinates)
     diagonalElements[i].adjust(Xupperbound, Xlowerbound, Yupperbound, Ylowerbound)
+    print(diagonalElements[i].x1, diagonalElements[i].y1, diagonalElements[i].x2, diagonalElements[i].y2)
 
 # for i in range(len(horizontalElements)):
 #     for j in range(len(horizontalElements)):
@@ -352,7 +357,7 @@ for i in range(len(diagonalElements)):
         if distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y2) < distance:
             distance = distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y2)
             diagonalElements[i].neighbour1 = verticalElements[j]
-    if distance < 50:
+    if distance < 5:
         diagonalElements[i].flag1 = True
     else: diagonalElements[i].flag1 = False
     distance1 = distance
@@ -372,7 +377,7 @@ for i in range(len(diagonalElements)):
         if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2) < distance:
             distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2)
             diagonalElements[i].neighbour2 = verticalElements[j]
-    if distance < 50:
+    if distance < 5:
         diagonalElements[i].flag2 = True
     else: diagonalElements[i].flag2 = False
     distance2 = distance
@@ -432,7 +437,7 @@ for i in range(len(elements)):
             elements[i].green = 0
             elements[i].blue = 0
 
-dwg = svgwrite.Drawing('Esempio15_dopo.svg', profile='full')
+dwg = svgwrite.Drawing('Esempio16_dopo.svg', profile='full')
 
 dwg.viewbox(width= svg_width, height= svg_height)
 
