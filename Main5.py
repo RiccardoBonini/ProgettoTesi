@@ -84,14 +84,14 @@ class Element:
                     self.x1 = self.neighbour1.x2
                     self.y1 = self.neighbour1.y2
             if self.flag2 == True:
-                distance1 = distanceBetweenPoints(self.x2, self.y2, self.neighbour1.x1, self.neighbour1.y1)
-                distance2 = distanceBetweenPoints(self.x2, self.y2, self.neighbour1.x2, self.neighbour1.y2)
+                distance1 = distanceBetweenPoints(self.x2, self.y2, self.neighbour2.x1, self.neighbour2.y1)
+                distance2 = distanceBetweenPoints(self.x2, self.y2, self.neighbour2.x2, self.neighbour2.y2)
                 if distance1 < distance2:
-                    self.x2 = self.neighbour1.x1
-                    self.y2 = self.neighbour1.y1
+                    self.x2 = self.neighbour2.x1
+                    self.y2 = self.neighbour2.y1
                 else:
-                    self.x2 = self.neighbour1.x2
-                    self.y2 = self.neighbour1.y2
+                    self.x2 = self.neighbour2.x2
+                    self.y2 = self.neighbour2.y2
 
 
 doc = minidom.parse('Esempio16_prima.svg')
@@ -191,11 +191,11 @@ for i in range(len(horizontalElements)):
     horizontalElements[i].adjust(Xupperbound, Xlowerbound, Yupperbound, Ylowerbound)
 
 for i in range(len(diagonalElements)):
-    print("elemento diagonale:", i)
-    print(diagonalElements[i].xcoordinates)
-    print(diagonalElements[i].ycoordinates)
+    # print("elemento diagonale:", i)
+    # print(diagonalElements[i].xcoordinates)
+    # print(diagonalElements[i].ycoordinates)
     diagonalElements[i].adjust(Xupperbound, Xlowerbound, Yupperbound, Ylowerbound)
-    print(diagonalElements[i].x1, diagonalElements[i].y1, diagonalElements[i].x2, diagonalElements[i].y2)
+    # print(diagonalElements[i].x1, diagonalElements[i].y1, diagonalElements[i].x2, diagonalElements[i].y2)
 
 # for i in range(len(horizontalElements)):
 #     for j in range(len(horizontalElements)):
@@ -357,7 +357,7 @@ for i in range(len(diagonalElements)):
         if distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y2) < distance:
             distance = distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y2)
             diagonalElements[i].neighbour1 = verticalElements[j]
-    if distance < 5:
+    if distance < 50:
         diagonalElements[i].flag1 = True
     else: diagonalElements[i].flag1 = False
     distance1 = distance
@@ -377,7 +377,7 @@ for i in range(len(diagonalElements)):
         if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2) < distance:
             distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2)
             diagonalElements[i].neighbour2 = verticalElements[j]
-    if distance < 5:
+    if distance < 50:
         diagonalElements[i].flag2 = True
     else: diagonalElements[i].flag2 = False
     distance2 = distance
@@ -396,7 +396,13 @@ for i in range(len(horizontalElements)):
     elements.append(horizontalElements[i])
 
 for i in range(len(diagonalElements)):
+    print("punto1 elemento diagonale :", i, ":", diagonalElements[i].x1, diagonalElements[i].y1)
+    print("punto2 elemento diagonale :", i, ":", diagonalElements[i].x2, diagonalElements[i].y2)
     diagonalElements[i].fix()
+    print("Neighbour1 elemento diagonale:", i, ":", diagonalElements[i].flag1, diagonalElements[i].neighbour1.x1, diagonalElements[i].neighbour1.y1, diagonalElements[i].neighbour1.x2, diagonalElements[i].neighbour1.y2 )
+    print("Neighbour2 elemento diagonale:", i, ":", diagonalElements[i].flag2, diagonalElements[i].neighbour2.x1, diagonalElements[i].neighbour2.y1, diagonalElements[i].neighbour2.x2, diagonalElements[i].neighbour2.y2 )
+    print("punto1 elemento diagonale dopo fix:", i, ":", diagonalElements[i].x1, diagonalElements[i].y1)
+    print("punto2 elemento diagonale dopo fix:", i, ":", diagonalElements[i].x2, diagonalElements[i].y2)
     elements.append(diagonalElements[i])
 
 
