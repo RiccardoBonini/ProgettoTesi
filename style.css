@@ -1,0 +1,20 @@
+
+#bordo:hover {
+    stroke: red;
+    background-color: red;
+    color : red;
+}
+
+#interno:hover {
+    stroke: #990099;
+    fill: red;
+    background-color: red;
+    color : red;
+}
+
+#porta:hover{
+    stroke: blue;
+    fill: red;
+    background-color: red;
+    color : red;
+}
