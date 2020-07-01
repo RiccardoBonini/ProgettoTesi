@@ -83,6 +83,14 @@ class Element:
                 else:
                     self.x1 = self.neighbour1.x2
                     self.y1 = self.neighbour1.y2
+                distance1 = distanceBetweenPoints(self.x2, self.y2, self.neighbour2.x1, self.neighbour2.y1)
+                distance2 = distanceBetweenPoints(self.x2, self.y2, self.neighbour2.x2, self.neighbour2.y2)
+                if distance1 < distance2:
+                    self.x2 = self.neighbour2.x1
+                    self.y2 = self.neighbour2.y1
+                else:
+                    self.x2 = self.neighbour2.x2
+                    self.y2 = self.neighbour2.y2
             if self.flag2 == True:
                 distance1 = distanceBetweenPoints(self.x2, self.y2, self.neighbour2.x1, self.neighbour2.y1)
                 distance2 = distanceBetweenPoints(self.x2, self.y2, self.neighbour2.x2, self.neighbour2.y2)
@@ -92,6 +100,15 @@ class Element:
                 else:
                     self.x2 = self.neighbour2.x2
                     self.y2 = self.neighbour2.y2
+                distance1 = distanceBetweenPoints(self.x1, self.y1, self.neighbour1.x1, self.neighbour1.y1)
+                distance2 = distanceBetweenPoints(self.x1, self.y1, self.neighbour1.x2, self.neighbour1.y2)
+                if distance1 < distance2:
+                    self.x1 = self.neighbour1.x1
+                    self.y1 = self.neighbour1.y1
+                else:
+                    self.x1 = self.neighbour1.x2
+                    self.y1 = self.neighbour1.y2
+
 
 
 doc = minidom.parse('Esempio16_prima.svg')
@@ -357,26 +374,32 @@ for i in range(len(diagonalElements)):
         if distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y2) < distance:
             distance = distanceBetweenPoints(diagonalElements[i].x1, diagonalElements[i].y1, verticalElements[j].x1, verticalElements[j].y2)
             diagonalElements[i].neighbour1 = verticalElements[j]
+    #diagonalElements[i].flag1 = True
     if distance < 50:
         diagonalElements[i].flag1 = True
     else: diagonalElements[i].flag1 = False
     distance1 = distance
     distance = 1000
     for j in range(len(horizontalElements)):
-        if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x1, horizontalElements[j].y1) < distance:
-            distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x1, horizontalElements[j].y1)
-            diagonalElements[i].neighbour2 = horizontalElements[j]
-        if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x2, horizontalElements[j].y1) < distance:
-            distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x2, horizontalElements[j].y1)
-            diagonalElements[i].neighbour2 = horizontalElements[j]
+        #print(horizontalElements[j] == diagonalElements[i].neighbour1)
+        if horizontalElements[j] != diagonalElements[i].neighbour1:
+            if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x1, horizontalElements[j].y1) < distance:
+                distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x1, horizontalElements[j].y1)
+                diagonalElements[i].neighbour2 = horizontalElements[j]
+            if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x2, horizontalElements[j].y1) < distance:
+                distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, horizontalElements[j].x2, horizontalElements[j].y1)
+                diagonalElements[i].neighbour2 = horizontalElements[j]
     #horizontal_distance = distance
     for j in range(len(verticalElements)):
-        if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y1) < distance:
-            distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y1)
-            diagonalElements[i].neighbour2 = verticalElements[j]
-        if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2) < distance:
-            distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2)
-            diagonalElements[i].neighbour2 = verticalElements[j]
+        #print(verticalElements[j] == diagonalElements[i].neighbour1)
+        if verticalElements[j] != diagonalElements[i].neighbour1:
+            if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y1) < distance:
+                distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y1)
+                diagonalElements[i].neighbour2 = verticalElements[j]
+            if distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2) < distance:
+                distance = distanceBetweenPoints(diagonalElements[i].x2, diagonalElements[i].y2, verticalElements[j].x1, verticalElements[j].y2)
+                diagonalElements[i].neighbour2 = verticalElements[j]
+    #diagonalElements[i].flag2 = True
     if distance < 50:
         diagonalElements[i].flag2 = True
     else: diagonalElements[i].flag2 = False
@@ -396,13 +419,14 @@ for i in range(len(horizontalElements)):
     elements.append(horizontalElements[i])
 
 for i in range(len(diagonalElements)):
-    print("punto1 elemento diagonale :", i, ":", diagonalElements[i].x1, diagonalElements[i].y1)
-    print("punto2 elemento diagonale :", i, ":", diagonalElements[i].x2, diagonalElements[i].y2)
+    # print("punto1 elemento diagonale :", i, ":", diagonalElements[i].x1, diagonalElements[i].y1)
+    # print("punto2 elemento diagonale :", i, ":", diagonalElements[i].x2, diagonalElements[i].y2)
     diagonalElements[i].fix()
-    print("Neighbour1 elemento diagonale:", i, ":", diagonalElements[i].flag1, diagonalElements[i].neighbour1.x1, diagonalElements[i].neighbour1.y1, diagonalElements[i].neighbour1.x2, diagonalElements[i].neighbour1.y2 )
-    print("Neighbour2 elemento diagonale:", i, ":", diagonalElements[i].flag2, diagonalElements[i].neighbour2.x1, diagonalElements[i].neighbour2.y1, diagonalElements[i].neighbour2.x2, diagonalElements[i].neighbour2.y2 )
-    print("punto1 elemento diagonale dopo fix:", i, ":", diagonalElements[i].x1, diagonalElements[i].y1)
-    print("punto2 elemento diagonale dopo fix:", i, ":", diagonalElements[i].x2, diagonalElements[i].y2)
+    # print("Neighbour1 elemento diagonale:", i, ":", diagonalElements[i].flag1, diagonalElements[i].neighbour1.x1, diagonalElements[i].neighbour1.y1, diagonalElements[i].neighbour1.x2, diagonalElements[i].neighbour1.y2 )
+    # print("Neighbour2 elemento diagonale:", i, ":", diagonalElements[i].flag2, diagonalElements[i].neighbour2.x1, diagonalElements[i].neighbour2.y1, diagonalElements[i].neighbour2.x2, diagonalElements[i].neighbour2.y2 )
+    # print("punto1 elemento diagonale dopo fix:", i, ":", diagonalElements[i].x1, diagonalElements[i].y1)
+    # print("punto2 elemento diagonale dopo fix:", i, ":", diagonalElements[i].x2, diagonalElements[i].y2)
+    #print('Elemento diagonale ', i, diagonalElements[i].neighbour1.x1, diagonalElements[i].neighbour1.y1, diagonalElements[i].neighbour1.x2, diagonalElements[i].neighbour1.y2, diagonalElements[i].neighbour2.x1, diagonalElements[i].neighbour2.y1, diagonalElements[i].neighbour2.x2, diagonalElements[i].neighbour2.y2)
     elements.append(diagonalElements[i])
 
 
@@ -419,7 +443,7 @@ next = topElement.neighbour2
 visited = []
 
 while loop == True:
-    current.stroke_width = 10
+    current.stroke_width = 15
     current.role = 'bordo'
     visited.append(current)
     if current.neighbour2 not in visited:
@@ -443,7 +467,7 @@ for i in range(len(elements)):
             elements[i].green = 0
             elements[i].blue = 0
 
-dwg = svgwrite.Drawing('Esempio16_dopo.svg', profile='full')
+dwg = svgwrite.Drawing('Esempio16_dopo.svg', size = (svg_width, svg_height))
 
 dwg.viewbox(width= svg_width, height= svg_height)
 
