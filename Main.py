@@ -1,6 +1,9 @@
 import svgwrite
 from xml.dom import minidom
 import math
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPDF, renderPM
+from PIL import Image, ImageDraw
 
 def distanceBetweenPoints(x1, y1, x2, y2):
     distance = math.sqrt(((x1 - x2)**2) + ((y1 - y2)**2))
@@ -111,7 +114,7 @@ class Element:
 
 
 
-doc = minidom.parse('Esempio16_prima.svg')
+doc = minidom.parse('Esempio15_prima.svg')
 svg_width = doc.getElementsByTagName('svg')[0].getAttribute('width')
 svg_height = doc.getElementsByTagName('svg')[0].getAttribute('height')
 # print(svg_width, svg_height)
@@ -467,7 +470,7 @@ for i in range(len(elements)):
             elements[i].green = 0
             elements[i].blue = 0
 
-dwg = svgwrite.Drawing('Esempio16_dopo.svg', size = (svg_width, svg_height))
+dwg = svgwrite.Drawing('Esempio15_dopo.svg', size = (svg_width, svg_height))
 
 dwg.viewbox(width= svg_width, height= svg_height)
 
@@ -475,3 +478,12 @@ for i in range(len(elements)):
     dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(elements[i].red, elements[i].green, elements[i].blue, '%'), stroke_width = elements[i].stroke_width, id = elements[i].role, onmouseover="playAudio()"))
 
 dwg.save()
+
+drawing = svg2rlg("Esempio15_dopo.svg")
+renderPDF.drawToFile(drawing, "file.pdf")
+renderPM.drawToFile(drawing, "file.png", fmt="PNG")
+
+base = Image.open('file.png').convert('RGBA')
+ImageDraw.floodfill(base, (elements[0].x1 - 50, elements[0].y1 + 50), (0, 0, 255, 255))
+ImageDraw.floodfill(base, (50, 50), (0, 0, 255, 255))
+base.show()
