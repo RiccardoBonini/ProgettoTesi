@@ -4,6 +4,8 @@ import math
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF, renderPM
 from PIL import Image, ImageDraw
+import cv2
+import numpy as np
 
 
 def distanceBetweenPoints(x1, y1, x2, y2):
@@ -488,9 +490,21 @@ renderPDF.drawToFile(drawing, "file.pdf")
 renderPM.drawToFile(drawing, "file.png", fmt="PNG")
 
 base = Image.open('file.png').convert('RGBA')
+
 for i in range(len(special_symbols)):
     print(special_symbols[i][0], special_symbols[i][1])
     ImageDraw.floodfill(base, (special_symbols[i][0], special_symbols[i][1]), (0, 0, 255, 255))
 
-base.show()
+#base.show()
+base.save('final_file.png')
 
+image = cv2.imread('final_file.png')
+hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+low_blue = np.array([94, 80, 2])
+high_blue = np.array([126, 255, 255])
+blue_mask = cv2.inRange(hsv, low_blue, high_blue)
+blue = cv2.bitwise_and(image, image, mask = blue_mask)
+
+cv2.imshow('Blue', blue)
+cv2.waitKey(0)
