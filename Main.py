@@ -506,5 +506,22 @@ high_blue = np.array([126, 255, 255])
 blue_mask = cv2.inRange(hsv, low_blue, high_blue)
 blue = cv2.bitwise_and(image, image, mask = blue_mask)
 
-cv2.imshow('Blue', blue)
-cv2.waitKey(0)
+#cv2.imshow('Blue', blue)
+#cv2.waitKey(0)
+cv2.imwrite('blue.jpg', blue)
+
+im = cv2.imread('blue.jpg')
+imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+ret, thresh = cv2.threshold(imgray, 10, 255, 0)
+contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+path_coordinates = 'M'
+for i in range(len(contours[0])):
+    path_coordinates = path_coordinates + str(contours[0][i][0][0]) + ' '
+    path_coordinates = path_coordinates + str(contours[0][i][0][1]) + ' '
+
+#print(path_coordinates)
+dwg.add(dwg.path(d = path_coordinates, fill = svgwrite.rgb(255, 0, 0)))
+dwg.save()
+#cv2.imshow('A', thresh)
+#cv2.waitKey(0)
