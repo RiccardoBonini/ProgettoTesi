@@ -477,51 +477,55 @@ for i in range(len(elements)):
             elements[i].blue = 0
 
 dwg = svgwrite.Drawing('Esempio17_dopo.svg', size = (svg_width, svg_height))
+empty_dwg = svgwrite.Drawing('Empty.svg', size = (svg_width, svg_height))
 
 dwg.viewbox(width= svg_width, height= svg_height)
+empty_dwg.viewbox(width= svg_width, height= svg_height)
 
 for i in range(len(elements)):
     dwg.add(dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke = svgwrite.rgb(elements[i].red, elements[i].green, elements[i].blue, '%'), stroke_width = elements[i].stroke_width, id = elements[i].role, onmouseover="playAudio()"))
+    empty_dwg.add(empty_dwg.line((elements[i].x1, elements[i].y1), (elements[i].x2, elements[i].y2), stroke=svgwrite.rgb(elements[i].red, elements[i].green, elements[i].blue, '%'), stroke_width=elements[i].stroke_width, id=elements[i].role, onmouseover="playAudio()"))
 
 dwg.save()
-
-drawing = svg2rlg("Esempio17_dopo.svg")
-renderPDF.drawToFile(drawing, "file.pdf")
-renderPM.drawToFile(drawing, "file.png", fmt="PNG")
-
-base = Image.open('file.png').convert('RGBA')
+empty_dwg.save()
 
 for i in range(len(special_symbols)):
+
+    drawing = svg2rlg("Empty.svg")
+    renderPDF.drawToFile(drawing, "file.pdf")
+    renderPM.drawToFile(drawing, "file.png", fmt="PNG")
+
+    base = Image.open('file.png').convert('RGBA')
     print(special_symbols[i][0], special_symbols[i][1])
     ImageDraw.floodfill(base, (special_symbols[i][0], special_symbols[i][1]), (0, 0, 255, 255))
 
-#base.show()
-base.save('final_file.png')
+    #base.show()
+    base.save('final_file.png')
 
-image = cv2.imread('final_file.png')
-hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    image = cv2.imread('final_file.png')
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-low_blue = np.array([94, 80, 2])
-high_blue = np.array([126, 255, 255])
-blue_mask = cv2.inRange(hsv, low_blue, high_blue)
-blue = cv2.bitwise_and(image, image, mask = blue_mask)
+    low_blue = np.array([94, 80, 2])
+    high_blue = np.array([126, 255, 255])
+    blue_mask = cv2.inRange(hsv, low_blue, high_blue)
+    blue = cv2.bitwise_and(image, image, mask = blue_mask)
 
-#cv2.imshow('Blue', blue)
-#cv2.waitKey(0)
-cv2.imwrite('blue.jpg', blue)
+    #cv2.imshow('Blue', blue)
+    #cv2.waitKey(0)
+    cv2.imwrite('blue.jpg', blue)
 
-im = cv2.imread('blue.jpg')
-imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-ret, thresh = cv2.threshold(imgray, 10, 255, 0)
-contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    im = cv2.imread('blue.jpg')
+    imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(imgray, 10, 255, 0)
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-path_coordinates = 'M'
-for i in range(len(contours[0])):
-    path_coordinates = path_coordinates + str(contours[0][i][0][0]) + ' '
-    path_coordinates = path_coordinates + str(contours[0][i][0][1]) + ' '
+    path_coordinates = 'M'
+    for i in range(len(contours[0])):
+        path_coordinates = path_coordinates + str(contours[0][i][0][0]) + ' '
+        path_coordinates = path_coordinates + str(contours[0][i][0][1]) + ' '
 
-#print(path_coordinates)
-dwg.add(dwg.path(d = path_coordinates, fill = svgwrite.rgb(255, 0, 0)))
-dwg.save()
-#cv2.imshow('A', thresh)
-#cv2.waitKey(0)
+    #print(path_coordinates)
+    dwg.add(dwg.path(d = path_coordinates, fill = svgwrite.rgb(255, 0, 0)))
+    dwg.save()
+    #cv2.imshow('A', thresh)
+    #cv2.waitKfey(0)
