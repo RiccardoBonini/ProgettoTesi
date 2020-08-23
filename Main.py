@@ -27,6 +27,10 @@ class Element:
         self.red = 0
         self.green = 0
         self.blue = 0
+        if self.tag == 'camera':
+            self.red = 255
+            self.green = 255
+
         # if self.tag == "linea verticale":
         #     self.x1 = x1
         #     self.x2 = (min(self.xcoordinates) + max(self.xcoordinates)) / 2
@@ -115,7 +119,7 @@ class Element:
                     self.x1 = self.neighbour1.x2
                     self.y1 = self.neighbour1.y2
 
-
+print('Reading the SVG file...')
 
 doc = minidom.parse('Esempio17_prima.svg')
 svg_width = doc.getElementsByTagName('svg')[0].getAttribute('width')
@@ -196,7 +200,7 @@ for i in range(len(coordinates)):
     y_difference = abs(Ycoordinates[i][-1] - Ycoordinates[i][0])
     if abs(x_difference - y_difference) < 50:
         if distanceBetweenPoints(Xcoordinates[i][-1], Ycoordinates[i][-1], Xcoordinates[i][0], Ycoordinates[i][0]) < 40:
-            special_symbols.append((Xcoordinates[i][0], Ycoordinates[i][0]))
+            special_symbols.append(Element(Xcoordinates[i][0], Ycoordinates[i][0], 'camera'))
         else : diagonalElements.append(Element(Xcoordinates[i],Ycoordinates[i], 'linea diagonale'))
     else :
         if abs(Xcoordinates[i][-1] - Xcoordinates[i][0]) < abs(Ycoordinates[i][-1] - Ycoordinates[i][0]):
@@ -206,7 +210,8 @@ for i in range(len(coordinates)):
         #print("elemento numero:", i, " : linea orizzontale")
             horizontalElements.append(Element(Xcoordinates[i], Ycoordinates[i], 'linea orizzontale'))
 
-print('Ci sono', len(diagonalElements), 'elementi diagonali')
+#print('Ci sono', len(diagonalElements), 'elementi diagonali')
+#print('Ci sono', len(special_symbols), 'elementi speciali')
 
 for i in range(len(verticalElements)):
     #print(elements[i].tag)
@@ -496,8 +501,8 @@ for i in range(len(special_symbols)):
     renderPM.drawToFile(drawing, "file.png", fmt="PNG")
 
     base = Image.open('file.png').convert('RGBA')
-    print(special_symbols[i][0], special_symbols[i][1])
-    ImageDraw.floodfill(base, (special_symbols[i][0], special_symbols[i][1]), (0, 0, 255, 255))
+    #print(special_symbols[i].xcoordinates, special_symbols[i].ycoordinates)
+    ImageDraw.floodfill(base, (special_symbols[i].xcoordinates, special_symbols[i].ycoordinates), (0, 0, 255, 255))
 
     #base.show()
     base.save('final_file.png')
@@ -520,12 +525,12 @@ for i in range(len(special_symbols)):
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
     path_coordinates = 'M'
-    for i in range(len(contours[0])):
-        path_coordinates = path_coordinates + str(contours[0][i][0][0]) + ' '
-        path_coordinates = path_coordinates + str(contours[0][i][0][1]) + ' '
+    for j in range(len(contours[0])):
+        path_coordinates = path_coordinates + str(contours[0][j][0][0]) + ' '
+        path_coordinates = path_coordinates + str(contours[0][j][0][1]) + ' '
 
-    #print(path_coordinates)
-    dwg.add(dwg.path(d = path_coordinates, fill = svgwrite.rgb(255, 0, 0)))
+    #print(special_symbols[i].red, special_symbols[i].green, special_symbols[i].blue)
+    dwg.add(dwg.path(d = path_coordinates, fill = svgwrite.rgb(special_symbols[i].red, special_symbols[i].green, special_symbols[i].blue)))
     dwg.save()
     #cv2.imshow('A', thresh)
     #cv2.waitKfey(0)
