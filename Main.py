@@ -30,6 +30,7 @@ class Element:
         if self.tag == 'camera':
             self.red = 255
             self.green = 255
+            self.role = 'camera'
 
         # if self.tag == "linea verticale":
         #     self.x1 = x1
@@ -119,7 +120,7 @@ class Element:
                     self.x1 = self.neighbour1.x2
                     self.y1 = self.neighbour1.y2
 
-print('Reading the SVG file...')
+print('Reading the SVG file... ')
 
 doc = minidom.parse('Esempio17_prima.svg')
 svg_width = doc.getElementsByTagName('svg')[0].getAttribute('width')
@@ -530,7 +531,7 @@ for i in range(len(special_symbols)):
         path_coordinates = path_coordinates + str(contours[0][j][0][1]) + ' '
 
     #print(special_symbols[i].red, special_symbols[i].green, special_symbols[i].blue)
-    dwg.add(dwg.path(d = path_coordinates, fill = svgwrite.rgb(special_symbols[i].red, special_symbols[i].green, special_symbols[i].blue)))
+    dwg.add(dwg.path(d = path_coordinates, fill = svgwrite.rgb(special_symbols[i].red, special_symbols[i].green, special_symbols[i].blue), id = special_symbols[i].role, onmouseover="playAudio()"))
     dwg.save()
     #cv2.imshow('A', thresh)
     #cv2.waitKfey(0)
