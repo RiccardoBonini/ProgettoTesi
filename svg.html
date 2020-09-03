@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" type="text/css" href="mystyle.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <!--<?xml version="1.0" encoding="utf-8" ?>-->
@@ -27,25 +27,57 @@
 
     function playAudio() {
 
-        var id = event.srcElement.id;
-        if (id == "bordo"){
-            audio1.play();
-            alert("riproduco audio bordo")
-        }
-        else if(id == "interno"){
-            audio2.play();
-            alert("riproduco audio interno")
-        }
-        else if(id == "porta"){
-            audio3.play();
-            alert("riproduco audio porta")
-        }
-        else if(id == "camera"){
-            audio1.play();
-            alert("riproduco audio camera")
-        }
+        // var id = event.srcElement.id;
+        // if (id == "bordo"){
+        //     audio1.play();
+        //     alert("riproduco audio bordo")
+        // }
+        // else if(id == "interno"){
+        //     audio2.play();
+        //     alert("riproduco audio interno")
+        // }
+        // else if(id == "porta"){
+        //     audio3.play();
+        //     alert("riproduco audio porta")
+        // }
+        // else if(id == "camera"){
+        //     audio1.play();
+        //     alert("riproduco audio camera")
+        // }
     }
 
+    function touchStart(e){
+
+        e.preventDefault();
+        var target = e.target;
+        targetID = target.id;
+        if (targetID == 'camera'){
+            //alert("sto toccando camera")
+            target.fill = "rgb(0,0,255)";
+            target.style.left = '900px';
+            target.style.top = '500px';
+        }
+        var touch = e.touches[0];
+        var moveOffsetX = target.offsetLeft - touch.pageX;
+        var moveOffsetY = target.offsetTop - touch.pageY;
+
+        target.addEventListener('touchmove', function () {
+            if (targetID == 'camera'){
+                alert("sto muovendo il dito")
+                // target.fill = "rgb(0,0,255)";
+                // target.style.left = '900px';
+                // target.style.top = '500px';
+            }
+            var positionX = touch.pageX + moveOffsetX;
+            var positionY = touch.pageY + moveOffsetY;
+            target.style.left = positionX + 'px';
+            target.style.top = positionY + 'px';
+            
+        }, false);
+
+    }
+
+    document.querySelector('body').addEventListener('touchstart', touchStart, false)
 </script>
 </body>
 </html>
