@@ -557,59 +557,87 @@ Html_file.write("""<script>
     var audio3 = new Audio();
     audio3.src = 'http://iss240.net/tempfiles/sound-effects/3.mp3';
 
-    function playAudio() {
+    function playAudio(id) {
 
-        // var id = event.srcElement.id;
-        // if (id == "bordo"){
-        //     audio1.play();
-        //     alert("riproduco audio bordo")
-        // }
-        // else if(id == "interno"){
-        //     audio2.play();
-        //     alert("riproduco audio interno")
-        // }
-        // else if(id == "porta"){
-        //     audio3.play();
-        //     alert("riproduco audio porta")
-        // }
-        // else if(id == "camera"){
-        //     audio1.play();
-        //     alert("riproduco audio camera")
-        // }
+        //var id = event.srcElement.id;
+        if (id == "bordo"){
+            audio1.play();
+            alert("riproduco audio bordo")
+        }
+        else if(id == "interno"){
+            audio2.play();
+            alert("riproduco audio interno")
+        }
+        else if(id == "porta"){
+            audio3.play();
+            alert("riproduco audio porta")
+        }
+        else if(id == "camera"){
+            audio1.play();
+            alert("riproduco audio camera")
+        }
     }
 
     function touchStart(e){
 
         e.preventDefault();
-        var target = e.target;
-        targetID = target.id;
-        if (targetID == 'camera'){
-            //alert("sto toccando camera")
-            target.fill = "rgb(0,0,255)";
-            target.style.left = '900px';
-            target.style.top = '500px';
-        }
-        var touch = e.touches[0];
-        var moveOffsetX = target.offsetLeft - touch.pageX;
-        var moveOffsetY = target.offsetTop - touch.pageY;
+        // e.preventDefault();
+        // var target = e.target;
+        // targetID = target.id;
+        // if (targetID == 'camera'){
+        //     //alert("sto toccando camera")
+        //     target.fill = "rgb(0,0,255)";
+        //     target.style.left = '900px';
+        //     target.style.top = '500px';
+        // }
+        // var touch = e.touches[0];
+        // var moveOffsetX = target.offsetLeft - touch.pageX;
+        // var moveOffsetY = target.offsetTop - touch.pageY;
+        //
+        // target.addEventListener('touchmove', function () {
+        //     if (targetID == 'camera'){
+        //         alert("sto muovendo il dito")
+        //         // target.fill = "rgb(0,0,255)";
+        //         // target.style.left = '900px';
+        //         // target.style.top = '500px';
+        //     }
+        //     var positionX = touch.pageX + moveOffsetX;
+        //     var positionY = touch.pageY + moveOffsetY;
+        //     target.style.left = positionX + 'px';
+        //     target.style.top = positionY + 'px';
+        //
+        // }, false);
 
-        target.addEventListener('touchmove', function () {
-            if (targetID == 'camera'){
-                alert("sto muovendo il dito")
-                // target.fill = "rgb(0,0,255)";
-                // target.style.left = '900px';
-                // target.style.top = '500px';
-            }
-            var positionX = touch.pageX + moveOffsetX;
-            var positionY = touch.pageY + moveOffsetY;
-            target.style.left = positionX + 'px';
-            target.style.top = positionY + 'px';
-            
-        }, false);
+    }
+
+    function getTouchMouseTargetElement(e) {
+        if (e.touches) {
+            return document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
+        }
+        return e.target;
+    }
+
+    function touchMove(e){
+
+        //alert('Sto muovendo il dito')
+        e.preventDefault();
+        var target = getTouchMouseTargetElement(e);
+        targetID = target.id;
+        playAudio(targetID)
+        // if (targetID == 'camera'){
+        //     alert("sto toccando camera")
+        //     target.fill = "rgb(0,0,255)";
+        //     target.style.left = '900px';
+        //     target.style.top = '500px';
+        // }
+
+
+
 
     }
 
     document.querySelector('body').addEventListener('touchstart', touchStart, false)
+    document.querySelector('body').addEventListener('touchmove', touchMove, false)
 </script>
 """)
 Html_file.close()
