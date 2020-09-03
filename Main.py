@@ -6,7 +6,8 @@ from reportlab.graphics import renderPDF, renderPM
 from PIL import Image, ImageDraw
 import cv2
 import numpy as np
-
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
 def distanceBetweenPoints(x1, y1, x2, y2):
     distance = math.sqrt(((x1 - x2)**2) + ((y1 - y2)**2))
@@ -120,9 +121,14 @@ class Element:
                     self.x1 = self.neighbour1.x2
                     self.y1 = self.neighbour1.y2
 
-print('Reading the SVG file... ')
+print('Please select the SVG file')
 
-doc = minidom.parse('Esempio17_prima.svg')
+Tk().withdraw()
+filename = askopenfilename()
+
+print('Running...')
+
+doc = minidom.parse(filename)
 svg_width = doc.getElementsByTagName('svg')[0].getAttribute('width')
 svg_height = doc.getElementsByTagName('svg')[0].getAttribute('height')
 # print(svg_width, svg_height)
@@ -482,7 +488,7 @@ for i in range(len(elements)):
             elements[i].green = 0
             elements[i].blue = 0
 
-dwg = svgwrite.Drawing('Esempio17_dopo.svg', size = (svg_width, svg_height))
+dwg = svgwrite.Drawing('Final_SVG.svg', size = (svg_width, svg_height))
 empty_dwg = svgwrite.Drawing('Empty.svg', size = (svg_width, svg_height))
 
 dwg.viewbox(width= svg_width, height= svg_height)
@@ -535,3 +541,75 @@ for i in range(len(special_symbols)):
     dwg.save()
     #cv2.imshow('A', thresh)
     #cv2.waitKfey(0)
+
+
+html_svg = open('Final_SVG.svg', 'r').read()
+#print(html_svg)
+
+Html_file= open("Final_Plan.html","w")
+Html_file.write(html_svg)
+Html_file.write("""<script>
+
+    var audio1 = new Audio();
+    audio1.src = 'http://iss240.net/tempfiles/menu-click/1.mp3';
+    var audio2 = new Audio();
+    audio2.src = 'http://iss240.net/tempfiles/sound-effects/5.mp3';
+    var audio3 = new Audio();
+    audio3.src = 'http://iss240.net/tempfiles/sound-effects/3.mp3';
+
+    function playAudio() {
+
+        // var id = event.srcElement.id;
+        // if (id == "bordo"){
+        //     audio1.play();
+        //     alert("riproduco audio bordo")
+        // }
+        // else if(id == "interno"){
+        //     audio2.play();
+        //     alert("riproduco audio interno")
+        // }
+        // else if(id == "porta"){
+        //     audio3.play();
+        //     alert("riproduco audio porta")
+        // }
+        // else if(id == "camera"){
+        //     audio1.play();
+        //     alert("riproduco audio camera")
+        // }
+    }
+
+    function touchStart(e){
+
+        e.preventDefault();
+        var target = e.target;
+        targetID = target.id;
+        if (targetID == 'camera'){
+            //alert("sto toccando camera")
+            target.fill = "rgb(0,0,255)";
+            target.style.left = '900px';
+            target.style.top = '500px';
+        }
+        var touch = e.touches[0];
+        var moveOffsetX = target.offsetLeft - touch.pageX;
+        var moveOffsetY = target.offsetTop - touch.pageY;
+
+        target.addEventListener('touchmove', function () {
+            if (targetID == 'camera'){
+                alert("sto muovendo il dito")
+                // target.fill = "rgb(0,0,255)";
+                // target.style.left = '900px';
+                // target.style.top = '500px';
+            }
+            var positionX = touch.pageX + moveOffsetX;
+            var positionY = touch.pageY + moveOffsetY;
+            target.style.left = positionX + 'px';
+            target.style.top = positionY + 'px';
+            
+        }, false);
+
+    }
+
+    document.querySelector('body').addEventListener('touchstart', touchStart, false)
+</script>
+""")
+Html_file.close()
