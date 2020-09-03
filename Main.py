@@ -488,8 +488,8 @@ for i in range(len(elements)):
             elements[i].green = 0
             elements[i].blue = 0
 
-dwg = svgwrite.Drawing('Final_SVG.svg', size = (svg_width, svg_height))
-empty_dwg = svgwrite.Drawing('Empty.svg', size = (svg_width, svg_height))
+dwg = svgwrite.Drawing('Final_SVG.svg')
+empty_dwg = svgwrite.Drawing('Empty.svg')
 
 dwg.viewbox(width= svg_width, height= svg_height)
 empty_dwg.viewbox(width= svg_width, height= svg_height)
@@ -547,6 +547,7 @@ html_svg = open('Final_SVG.svg', 'r').read()
 #print(html_svg)
 
 Html_file= open("Final_Plan.html","w")
+Html_file.write("""<meta name="viewport" content="width=device-width, initial-scale=1.0">""")
 Html_file.write(html_svg)
 Html_file.write("""<script>
 
@@ -562,7 +563,8 @@ Html_file.write("""<script>
         //var id = event.srcElement.id;
         if (id == "bordo"){
             audio1.play();
-            alert("riproduco audio bordo")
+            navigator.vibrate(200);
+            //alert("riproduco audio bordo")
         }
         else if(id == "interno"){
             audio2.play();
@@ -621,6 +623,7 @@ Html_file.write("""<script>
 
         //alert('Sto muovendo il dito')
         e.preventDefault();
+        //navigator.vibrate(200);
         var target = getTouchMouseTargetElement(e);
         targetID = target.id;
         playAudio(targetID)
