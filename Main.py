@@ -235,6 +235,17 @@ for i in range(len(diagonalElements)):
     diagonalElements[i].adjust(Xupperbound, Xlowerbound, Yupperbound, Ylowerbound)
     # print(diagonalElements[i].x1, diagonalElements[i].y1, diagonalElements[i].x2, diagonalElements[i].y2)
 
+first_dwg = svgwrite.Drawing('First.svg')
+first_dwg.viewbox(width= svg_width, height= svg_height)
+for i in range(len(verticalElements)):
+    first_dwg.add(first_dwg.line((verticalElements[i].x1, verticalElements[i].y1), (verticalElements[i].x2, verticalElements[i].y2), stroke = svgwrite.rgb(verticalElements[i].red, verticalElements[i].green, verticalElements[i].blue, '%'), stroke_width = verticalElements[i].stroke_width, id = verticalElements[i].role, onmouseover="playAudio()"))
+for i in range(len(horizontalElements)):
+    first_dwg.add(first_dwg.line((horizontalElements[i].x1, horizontalElements[i].y1), (horizontalElements[i].x2, horizontalElements[i].y2), stroke = svgwrite.rgb(horizontalElements[i].red, horizontalElements[i].green, horizontalElements[i].blue, '%'), stroke_width = horizontalElements[i].stroke_width, id = horizontalElements[i].role, onmouseover="playAudio()"))
+for i in range(len(diagonalElements)):
+    first_dwg.add(first_dwg.line((diagonalElements[i].x1, diagonalElements[i].y1), (diagonalElements[i].x2, diagonalElements[i].y2), stroke = svgwrite.rgb(diagonalElements[i].red, diagonalElements[i].green, diagonalElements[i].blue, '%'), stroke_width = diagonalElements[i].stroke_width, id = diagonalElements[i].role, onmouseover="playAudio()"))
+
+first_dwg.save()
+
 # for i in range(len(horizontalElements)):
 #     for j in range(len(horizontalElements)):
 #         if i != j:
@@ -488,7 +499,7 @@ for i in range(len(elements)):
             elements[i].green = 0
             elements[i].blue = 0
 
-dwg = svgwrite.Drawing('Final_SVG.svg')
+dwg = svgwrite.Drawing('Final_SVG.svg', size=('100%', '100%'))
 empty_dwg = svgwrite.Drawing('Empty.svg')
 
 dwg.viewbox(width= svg_width, height= svg_height)
@@ -638,7 +649,8 @@ Html_file.write("""<script>
 
 
     }
-
+    
+   
     document.querySelector('body').addEventListener('touchstart', touchStart, false)
     document.querySelector('body').addEventListener('touchmove', touchMove, false)
 </script>
