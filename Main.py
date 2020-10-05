@@ -207,7 +207,7 @@ for i in range(len(coordinates)):
     y_difference = abs(Ycoordinates[i][-1] - Ycoordinates[i][0])
     if abs(x_difference - y_difference) < 50:
         if distanceBetweenPoints(Xcoordinates[i][-1], Ycoordinates[i][-1], Xcoordinates[i][0], Ycoordinates[i][0]) < 40:
-            special_symbols.append(Element(Xcoordinates[i][0], Ycoordinates[i][0], 'camera'))
+            special_symbols.append(Element(Xcoordinates[i], Ycoordinates[i], 'camera'))
         else : diagonalElements.append(Element(Xcoordinates[i],Ycoordinates[i], 'linea diagonale'))
     else :
         if abs(Xcoordinates[i][-1] - Xcoordinates[i][0]) < abs(Ycoordinates[i][-1] - Ycoordinates[i][0]):
@@ -245,6 +245,57 @@ for i in range(len(diagonalElements)):
     first_dwg.add(first_dwg.line((diagonalElements[i].x1, diagonalElements[i].y1), (diagonalElements[i].x2, diagonalElements[i].y2), stroke = svgwrite.rgb(diagonalElements[i].red, diagonalElements[i].green, diagonalElements[i].blue, '%'), stroke_width = diagonalElements[i].stroke_width, id = diagonalElements[i].role, onmouseover="playAudio()"))
 
 first_dwg.save()
+
+#ciclo per evidenziare i simboli speciali
+special_dwg = svgwrite.Drawing('Special_Symbols.svg')
+special_dwg.viewbox(width= svg_width, height= svg_height)
+for i in range(len(special_symbols)):
+    path_coordinates = 'M'
+    for j in range(len(special_symbols[i].xcoordinates)):
+        path_coordinates = path_coordinates + str(special_symbols[i].xcoordinates[j]) + ' '
+        path_coordinates = path_coordinates + str(special_symbols[i].ycoordinates[j]) + ' '
+        # path_coordinates = path_coordinates + str(special_symbols[0][j][0][1]) + ' '
+
+    # print(special_symbols[i].red, special_symbols[i].green, special_symbols[i].blue)
+    special_dwg.add(special_dwg.path(d=path_coordinates, stroke = svgwrite.rgb(0, 0, 0), stroke_width = 1))
+special_dwg.save()
+
+
+drawing = svg2rlg('Special_Symbols.svg')
+renderPDF.drawToFile(drawing, "file.pdf")
+renderPM.drawToFile(drawing, "file.png", fmt="PNG")
+
+base = Image.open('file.png').convert('RGBA')
+#print(special_symbols[i].xcoordinates, special_symbols[i].ycoordinates)
+#ImageDraw.floodfill(base, (special_symbols[i].xcoordinates, special_symbols[i].ycoordinates), (0, 0, 255, 255))
+
+#base.show()
+base.save('special_symbols.png')
+
+# Read image as gray-scale
+img = cv2.imread('special_symbols.png', cv2.IMREAD_COLOR)
+# Convert to gray-scale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# Blur the image to reduce noise
+img_blur = cv2.medianBlur(gray, 5)
+# cv2.imshow('A',gray)
+# cv2.waitKey(0)
+# Apply hough transform on the image
+circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, img.shape[0]/64, param1=200, param2=10, minRadius=5, maxRadius=30)
+# Draw detected circles
+if circles is not None:
+    print('Ci sono cerchi!')
+    circles = np.uint16(np.around(circles))
+    for i in circles[0, :]:
+        # Draw outer circle
+        cv2.circle(img, (i[0], i[1]), i[2], (0, 255, 0), 2)
+        # Draw inner circle
+        cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
+cv2.imshow('A',img)
+cv2.waitKey(0)
+
+
+
 
 # for i in range(len(horizontalElements)):
 #     for j in range(len(horizontalElements)):
@@ -520,7 +571,7 @@ for i in range(len(special_symbols)):
 
     base = Image.open('file.png').convert('RGBA')
     #print(special_symbols[i].xcoordinates, special_symbols[i].ycoordinates)
-    ImageDraw.floodfill(base, (special_symbols[i].xcoordinates, special_symbols[i].ycoordinates), (0, 0, 255, 255))
+    ImageDraw.floodfill(base, (special_symbols[i].xcoordinates[0], special_symbols[i].ycoordinates[0]), (0, 0, 255, 255))
 
     #base.show()
     base.save('final_file.png')
