@@ -26,3 +26,4 @@ function playAudio() {
         alert("riproduco audio camera")
     }
 }
+
