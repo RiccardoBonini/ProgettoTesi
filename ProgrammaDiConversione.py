@@ -519,7 +519,7 @@ next = topElement.neighbour2
 visited = []
 
 while loop == True:
-    current.stroke_width = 15
+    current.stroke_width = 24
     current.role = 'bordo'
     visited.append(current)
     if current.neighbour2 not in visited:
@@ -540,7 +540,7 @@ for i in range(len(elements)):
             elements[i].blue = 50
         else:
             elements[i].role = 'interno'
-            elements[i].stroke_width = 12
+            elements[i].stroke_width = 15
             elements[i].red = 255
             elements[i].green = 0
             elements[i].blue = 0
